@@ -3,189 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Control</title>
+    <title>Casino Control PRO</title>
     <style>
         :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --accent-color: #f1e05a;
-            --text-color: #c9d1d9;
-            --border-color: #30363d;
+            /* Paleta de colores Premium */
+            --bg-body: #0a0e17;       /* Fondo ultra oscuro */
+            --bg-card: #141a29;       /* Fondo tarjetas (ligeramente más claro) */
+            --bg-input: #1f293a;      /* Fondo inputs */
+            --accent: #f1e05a;        /* Amarillo corporativo */
+            --accent-hover: #ffea75;  /* Amarillo al pasar el mouse */
+            --text-main: #e6edf3;     /* Texto principal */
+            --text-muted: #8b949e;   /* Texto secundario */
+            --border: #2d364a;        /* Bordes suaves */
+            --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+            --font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease-in-out;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: var(--font-family);
+            background-color: var(--bg-body);
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
+            line-height: 1.5;
         }
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
-        h1, h2 {
-            color: var(--accent-color);
+        /* --- Estilos de Texto --- */
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
             text-align: center;
+            margin: 10px 0 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* Pantalla de Login */
-        #login-screen {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            max-width: 400px;
-            margin: 100px auto;
-            text-align: center;
-        }
-
-        /* Formulario y Tabla */
-        .card {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0;
             margin-bottom: 20px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+            padding-bottom: 5px;
         }
 
+        /* --- Componentes Comunes --- */
+        .card {
+            background-color: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+        }
+
+        /* --- Pantalla de Login (Mejorada) --- */
+        #login-screen {
+            max-width: 420px;
+            margin: auto;
+            text-align: center;
+            padding: 50px 30px;
+        }
+
+        #login-screen p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        #password-input {
+            width: 100%;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            text-align: center;
+            padding: 15px;
+        }
+
+        /* --- Formulario y Grid --- */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
+            gap: 8px;
         }
 
         label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 0.9em;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
         input, select, textarea {
-            padding: 10px;
-            background-color: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            color: #fff;
+            padding: 12px 15px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-family);
+            font-size: 0.95rem;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--accent-color);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(241, 224, 90, 0.1);
         }
 
-        button {
-            background-color: var(--accent-color);
+        /* Estilo para los inputs de dinero */
+        .input-money {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* --- Botones --- */
+        .btn-primary {
+            background-color: var(--accent);
             color: #000;
             border: none;
-            padding: 12px 20px;
-            font-weight: bold;
-            border-radius: 4px;
+            padding: 14px 24px;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 15px;
             width: 100%;
-            transition: opacity 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 25px;
         }
 
-        button:hover {
-            opacity: 0.9;
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        /* --- Tabla Premium --- */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 10px;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 800px; /* Asegura scroll en móviles */
         }
 
         th, td {
-            padding: 12px;
+            padding: 16px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            color: var(--accent-color);
+            background-color: rgba(31, 41, 58, 0.4);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .hidden {
-            display: none;
+        th:first-child { border-radius: 8px 0 0 0; }
+        th:last-child { border-radius: 0 8px 0 0; }
+
+        tr:last-child td {
+            border-bottom: none;
         }
+
+        tr:hover td {
+            background-color: rgba(31, 41, 58, 0.2);
+        }
+
+        .col-fecha { color: var(--text-muted); font-size: 0.9rem; }
+        .col-nombre { font-weight: 600; color: var(--text-main); }
+        .col-money { font-family: 'Courier New', Courier, monospace; font-weight: bold; color: var(--accent); text-align: right; }
+        .col-obs { color: var(--text-muted); font-size: 0.9rem; font-style: italic;}
+
+        /* Clases de utilidad */
+        .hidden { display: none !important; }
+        .text-error { color: #ff6b6b; font-size: 0.9rem; margin-top: 10px; font-weight: 500;}
+
+        /* Animación de entrada */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #main-panel:not(.hidden) {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
 
-    <!-- LOGIN -->
-    <div id="login-screen">
-        <h1>Casino Control</h1>
-        <p>Ingrese la contraseña para continuar</p>
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-screen" class="card">
+        <h1>CASINO CONTROL<br><span style="font-size: 0.8rem; letter-spacing: 5px; color: var(--text-muted);">PRO SYSTEM</span></h1>
+        <p>Sistema de Gestión de Operaciones Seguras</p>
         <div class="form-group">
-            <input type="password" id="password-input" placeholder="Contraseña">
+            <label>PIN DE ACCESO</label>
+            <input type="password" id="password-input" placeholder="****" maxlength="4">
+            <p id="login-error" class="text-error hidden">⚠ PIN Incorrecto. Intente nuevamente.</p>
         </div>
-        <button onclick="checkPassword()">Ingresar</button>
-        <p id="login-error" style="color: #ff6b6b; display: none; margin-top: 10px;">Contraseña incorrecta</p>
+        <button class="btn-primary" onclick="checkPassword()">Ingresar al Sistema</button>
     </div>
 
     <!-- PANEL PRINCIPAL -->
     <div id="main-panel" class="hidden">
-        <h1>Control de Operaciones</h1>
+        <h1>Centro de Control</h1>
 
         <!-- FORMULARIO DE REGISTRO -->
         <div class="card">
-            <h2>Nuevo Registro</h2>
+            <h2>Nuevo Registro de Operación</h2>
             <form id="record-form">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Fecha</label>
+                        <label>Fecha de Operación</label>
                         <input type="date" id="fecha" required>
                     </div>
                     <div class="form-group">
-                        <label>Nombre</label>
-                        <input type="text" id="nombre" placeholder="Nombre completo" required>
+                        <label>Nombre del Operador/Cliente</label>
+                        <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
                     </div>
                     <div class="form-group">
-                        <label>Pagos ($)</label>
-                        <input type="number" id="pagos" step="0.01" placeholder="0.00">
+                        <label>Pagos Ingresados ($)</label>
+                        <input type="number" id="pagos" class="input-money" step="0.01" placeholder="0.00">
                     </div>
                     <div class="form-group">
-                        <label>Fichas ($)</label>
-                        <input type="number" id="fichas" step="0.01" placeholder="0.00">
+                        <label>Fichas Entregadas ($)</label>
+                        <input type="number" id="fichas" class="input-money" step="0.01" placeholder="0.00">
                     </div>
                     <div class="form-group">
-                        <label>Respaldo ($)</label>
-                        <input type="number" id="respaldo" step="0.01" placeholder="0.00">
+                        <label>Respaldo en Caja ($)</label>
+                        <input type="number" id="respaldo" class="input-money" step="0.01" placeholder="0.00">
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Observaciones</label>
-                    <textarea id="observaciones" rows="2" placeholder="Notas adicionales..."></textarea>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Observaciones y Notas Finales</label>
+                    <textarea id="observaciones" rows="3" placeholder="Detalles relevantes de la operación..."></textarea>
                 </div>
-                <button type="submit">Guardar Registro</button>
+                <button type="submit" class="btn-primary">Finalizar y Guardar Registro</button>
             </form>
         </div>
 
         <!-- RESUMEN DE DATOS -->
         <div class="card">
-            <h2>Registros Guardados</h2>
-            <div style="overflow-x: auto;">
+            <h2>Historial de Operaciones Recientes</h2>
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Fecha</th>
                             <th>Nombre</th>
-                            <th>Pagos</th>
-                            <th>Fichas</th>
-                            <th>Respaldo</th>
+                            <th style="text-align: right;">Pagos ($)</th>
+                            <th style="text-align: right;">Fichas ($)</th>
+                            <th style="text-align: right;">Respaldo ($)</th>
                             <th>Observaciones</th>
                         </tr>
                     </thead>
@@ -200,58 +304,98 @@
 </div>
 
 <script>
-    const CONTRASEÑA_CORRECTA = "1234";
+    // Configuración
+    const PIN_CORRECTO = "1234"; // Mantenemos el mismo PIN
+    const STORAGE_KEY = 'casino_records_pro'; // Clave nueva para no mezclar datos si usas el mismo navegador
 
+    // Cargar fecha de hoy automáticamente
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    // Gestión del PIN
     function checkPassword() {
         const pass = document.getElementById('password-input').value;
-        if (pass === CONTRASEÑA_CORRECTA) {
+        const errorMsg = document.getElementById('login-error');
+
+        if (pass === PIN_CORRECTO) {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-panel').classList.remove('hidden');
-            loadRecords();
+            errorMsg.classList.add('hidden');
+            loadRecords(); // Carga la tabla al entrar
         } else {
-            document.getElementById('login-error').style.display = 'block';
+            errorMsg.classList.remove('hidden');
+            document.getElementById('password-input').value = '';
+            document.getElementById('password-input').focus();
         }
     }
 
-    // Manejo del formulario
+    // Permitir Enter en el input de PIN
+    document.getElementById('password-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') { checkPassword(); }
+    });
+
+
+    // --- LÓGICA DE DATOS (LocalStorage) ---
+
+    // Formateador de moneda profesional
+    const formatter = new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 2
+    });
+
+    // Guardar nuevo registro
     document.getElementById('record-form').addEventListener('submit', function(e) {
         e.preventDefault();
 
         const record = {
+            id: Date.now(), // ID único para cada registro
             fecha: document.getElementById('fecha').value,
             nombre: document.getElementById('nombre').value,
-            pagos: document.getElementById('pagos').value || 0,
-            fichas: document.getElementById('fichas').value || 0,
-            respaldo: document.getElementById('respaldo').value || 0,
+            pagos: parseFloat(document.getElementById('pagos').value) || 0,
+            fichas: parseFloat(document.getElementById('fichas').value) || 0,
+            respaldo: parseFloat(document.getElementById('respaldo').value) || 0,
             observaciones: document.getElementById('observaciones').value || '-'
         };
 
-        let records = JSON.parse(localStorage.getItem('casino_records')) || [];
-        records.push(record);
-        localStorage.setItem('casino_records', JSON.stringify(records));
+        let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        records.unshift(record); // Agrega al principio de la lista
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
 
-        this.reset();
-        loadRecords();
+        this.reset(); // Limpia formulario
+        document.getElementById('fecha').valueAsDate = new Date(); // Resetea fecha a hoy
+        loadRecords(); // Recarga la tabla
     });
 
-    // Cargar registros almacenados
+    // Cargar y dibujar tabla
     function loadRecords() {
         const tbody = document.getElementById('records-table');
         tbody.innerHTML = '';
-        const records = JSON.parse(localStorage.getItem('casino_records')) || [];
+        const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        if (records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No hay registros guardados aún.</td></tr>';
+            return;
+        }
 
         records.forEach(r => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${r.fecha}</td>
-                <td>${r.nombre}</td>
-                <td>$${Number(r.pagos).toLocaleString()}</td>
-                <td>$${Number(r.fichas).toLocaleString()}</td>
-                <td>$${Number(r.respaldo).toLocaleString()}</td>
-                <td>${r.observaciones}</td>
+                <td class="col-fecha">${formatearFecha(r.fecha)}</td>
+                <td class="col-nombre">${r.nombre}</td>
+                <td class="col-money">${formatter.format(r.pagos)}</td>
+                <td class="col-money">${formatter.format(r.fichas)}</td>
+                <td class="col-money">${formatter.format(r.respaldo)}</td>
+                <td class="col-obs">${r.observaciones}</td>
             `;
             tbody.appendChild(row);
         });
+    }
+
+    // Ayudante para formatear fecha (AAAA-MM-DD a DD/MM/AAAA)
+    function formatearFecha(fechaStr) {
+        if(!fechaStr) return '-';
+        const [yy, mm, dd] = fechaStr.split('-');
+        return `${dd}/${mm}/${yy}`;
     }
 </script>
 
