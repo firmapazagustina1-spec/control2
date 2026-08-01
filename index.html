@@ -6,6 +6,8 @@
   <title>CASINO CONTROL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Librería SheetJS para exportar a Excel fácilmente -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     body {
       background-color: #121824;
@@ -56,9 +58,7 @@
       
       <form onsubmit="login(event)" class="space-y-4">
         <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-            🔒
-          </span>
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔒</span>
           <input type="password" id="passwordInput" placeholder="Clave de acceso" required
             class="w-full pl-10 pr-4 py-3 bg-[#121824] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 text-sm">
         </div>
@@ -173,6 +173,16 @@
         </button>
       </form>
 
+      <!-- BOTONES DE ACCIÓN (Excel y Borrar) -->
+      <div class="flex justify-between items-center text-xs">
+        <button onclick="exportarExcel('operaciones')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-2">
+          📥 Descargar Excel Operaciones
+        </button>
+        <button onclick="limpiarTodo('operaciones')" class="text-red-400 hover:text-red-300">
+          🗑️ Vaciar Operaciones
+        </button>
+      </div>
+
       <div class="card-dark rounded-xl overflow-hidden shadow-xl border border-gray-800">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs uppercase tracking-wider">
@@ -185,6 +195,7 @@
                 <th class="p-3">USUARIOS</th>
                 <th class="p-3">RESPALDO</th>
                 <th class="p-3">OBSERVACIONES</th>
+                <th class="p-3">ACCIONES</th>
               </tr>
             </thead>
             <tbody id="tableBody" class="divide-y divide-gray-800 text-center font-medium">
@@ -219,6 +230,16 @@
         </button>
       </form>
 
+      <!-- BOTONES DE ACCIÓN (Excel y Borrar) -->
+      <div class="flex justify-between items-center text-xs">
+        <button onclick="exportarExcel('personal')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-2">
+          📥 Descargar Excel Personal
+        </button>
+        <button onclick="limpiarTodo('personal')" class="text-red-400 hover:text-red-300">
+          🗑️ Vaciar Personal
+        </button>
+      </div>
+
       <div class="card-dark rounded-xl overflow-hidden shadow-xl border border-gray-800">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs uppercase tracking-wider">
@@ -229,6 +250,7 @@
                 <th class="p-3">DÍAS TRABAJADOS</th>
                 <th class="p-3">COSTO POR DÍA</th>
                 <th class="p-3">TOTAL A PAGAR</th>
+                <th class="p-3">ACCIONES</th>
               </tr>
             </thead>
             <tbody id="personalTableBody" class="divide-y divide-gray-800 text-center font-medium">
@@ -242,13 +264,16 @@
   </div>
 
   <script>
-    const CLAVE_CORRECTA = "1234";
+    const CLAVE_CORRECTA = "2626";
 
-    let totalPagosSum = 0;
-    let totalFichasSum = 0;
-    let totalUsuariosCount = 0;
-    let totalRespaldoSum = 0;
-    let totalPersonalSum = 0;
+    let operaciones = JSON.parse(localStorage.getItem("casino_operaciones") || "[]");
+    let personal = JSON.parse(localStorage.getItem("casino_personal") || "[]");
+
+    // Inicializar al cargar la página
+    window.onload = () => {
+      renderOperaciones();
+      renderPersonal();
+    };
 
     function login(e) {
       e.preventDefault();
@@ -270,16 +295,10 @@
     function toggleResumen() {
       const panel = document.getElementById("resumenPanel");
       const btnText = document.getElementById("btnResumenText");
-      if (panel.classList.contains("hidden")) {
-        panel.classList.remove("hidden");
-        btnText.innerText = "Ocultar resumen";
-      } else {
-        panel.classList.add("hidden");
-        btnText.innerText = "Ver resumen";
-      }
+      panel.classList.toggle("hidden");
+      btnText.innerText = panel.classList.contains("hidden") ? "Ver resumen" : "Ocultar resumen";
     }
 
-    // CAMBIO DE PESTAÑAS
     function switchTab(tab) {
       const tabOperaciones = document.getElementById("tabOperaciones");
       const tabPersonal = document.getElementById("tabPersonal");
@@ -289,79 +308,155 @@
       if (tab === 'operaciones') {
         tabOperaciones.classList.remove("hidden");
         tabPersonal.classList.add("hidden");
-
         btnOperaciones.className = "tab-btn active px-4 py-2 rounded-lg transition flex items-center gap-2";
         btnPersonal.className = "tab-btn inactive px-4 py-2 rounded-lg transition flex items-center gap-2";
       } else {
         tabOperaciones.classList.add("hidden");
         tabPersonal.classList.remove("hidden");
-
         btnOperaciones.className = "tab-btn inactive px-4 py-2 rounded-lg transition flex items-center gap-2";
         btnPersonal.className = "tab-btn active px-4 py-2 rounded-lg transition flex items-center gap-2";
       }
     }
 
-    // REGISTRAR OPERACIÓN
+    // --- MANEJO DE OPERACIONES ---
     function addRecord(e) {
       e.preventDefault();
-      const fecha = document.getElementById("fecha").value;
-      const nombre = document.getElementById("nombre").value;
-      const pagos = parseFloat(document.getElementById("pagos").value || 0);
-      const fichas = parseInt(document.getElementById("fichas").value || 0);
-      const usuarios = document.getElementById("usuarios").value || "-";
-      const respaldo = parseFloat(document.getElementById("respaldo").value || 0);
-      const observaciones = document.getElementById("observaciones").value || "-";
+      const nuevo = {
+        id: Date.now(),
+        fecha: document.getElementById("fecha").value,
+        nombre: document.getElementById("nombre").value,
+        pagos: parseFloat(document.getElementById("pagos").value || 0),
+        fichas: parseInt(document.getElementById("fichas").value || 0),
+        usuarios: document.getElementById("usuarios").value || "-",
+        respaldo: parseFloat(document.getElementById("respaldo").value || 0),
+        observaciones: document.getElementById("observaciones").value || "-"
+      };
 
-      totalPagosSum += pagos;
-      totalFichasSum += fichas;
-      if (usuarios !== "-") totalUsuariosCount++;
-      totalRespaldoSum += respaldo;
-
-      document.getElementById("resumenPagos").innerText = `$${totalPagosSum.toFixed(2)}`;
-      document.getElementById("resumenFichas").innerText = totalFichasSum;
-      document.getElementById("resumenUsuarios").innerText = totalUsuariosCount;
-      document.getElementById("resumenRespaldos").innerText = `$${totalRespaldoSum.toFixed(2)}`;
-
-      const tr = document.createElement("tr");
-      tr.className = "hover:bg-[#20293a] transition";
-      tr.innerHTML = `
-        <td class="p-3 text-gray-300 whitespace-nowrap">${fecha}</td>
-        <td class="p-3 font-semibold text-white">${nombre}</td>
-        <td class="p-3 text-green-400 font-bold">$${pagos.toFixed(2)}</td>
-        <td class="p-3 yellow-text font-bold">${fichas}</td>
-        <td class="p-3 text-gray-300">${usuarios}</td>
-        <td class="p-3 text-purple-400 font-bold">$${respaldo.toFixed(2)}</td>
-        <td class="p-3 text-gray-400 normal-case">${observaciones}</td>
-      `;
-
-      document.getElementById("tableBody").prepend(tr);
+      operaciones.unshift(nuevo);
+      guardarYRenderizar();
       e.target.reset();
     }
 
-    // REGISTRAR PERSONAL
+    function borrarOperacion(id) {
+      operaciones = operaciones.filter(item => item.id !== id);
+      guardarYRenderizar();
+    }
+
+    function renderOperaciones() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      let totalPagos = 0, totalFichas = 0, totalUsuarios = 0, totalRespaldo = 0;
+
+      operaciones.forEach(item => {
+        totalPagos += item.pagos;
+        totalFichas += item.fichas;
+        if (item.usuarios !== "-") totalUsuarios++;
+        totalRespaldo += item.respaldo;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-[#20293a] transition";
+        tr.innerHTML = `
+          <td class="p-3 text-gray-300 whitespace-nowrap">${item.fecha}</td>
+          <td class="p-3 font-semibold text-white">${item.nombre}</td>
+          <td class="p-3 text-green-400 font-bold">$${item.pagos.toFixed(2)}</td>
+          <td class="p-3 yellow-text font-bold">${item.fichas}</td>
+          <td class="p-3 text-gray-300">${item.usuarios}</td>
+          <td class="p-3 text-purple-400 font-bold">$${item.respaldo.toFixed(2)}</td>
+          <td class="p-3 text-gray-400 normal-case">${item.observaciones}</td>
+          <td class="p-3"><button onclick="borrarOperacion(${item.id})" class="text-red-400 hover:text-red-300">✖</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("resumenPagos").innerText = `$${totalPagos.toFixed(2)}`;
+      document.getElementById("resumenFichas").innerText = totalFichas;
+      document.getElementById("resumenUsuarios").innerText = totalUsuarios;
+      document.getElementById("resumenRespaldos").innerText = `$${totalRespaldo.toFixed(2)}`;
+    }
+
+    // --- MANEJO DE PERSONAL ---
     function addPersonalRecord(e) {
       e.preventDefault();
-      const fecha = document.getElementById("pFecha").value;
-      const nombre = document.getElementById("pNombre").value;
       const dias = parseInt(document.getElementById("pDias").value || 0);
       const costo = parseFloat(document.getElementById("pCosto").value || 0);
-      const totalPagar = dias * costo;
 
-      totalPersonalSum += totalPagar;
-      document.getElementById("resumenPersonal").innerText = `$${totalPersonalSum.toFixed(2)}`;
+      const nuevo = {
+        id: Date.now(),
+        fecha: document.getElementById("pFecha").value,
+        nombre: document.getElementById("pNombre").value,
+        dias: dias,
+        costo: costo,
+        total: dias * costo
+      };
 
-      const tr = document.createElement("tr");
-      tr.className = "hover:bg-[#20293a] transition";
-      tr.innerHTML = `
-        <td class="p-3 text-gray-300 whitespace-nowrap">${fecha}</td>
-        <td class="p-3 font-semibold text-white">${nombre}</td>
-        <td class="p-3 text-gray-300 font-bold">${dias}</td>
-        <td class="p-3 text-gray-300 font-bold">$${costo.toFixed(2)}</td>
-        <td class="p-3 text-green-400 font-black text-sm">$${totalPagar.toFixed(2)}</td>
-      `;
-
-      document.getElementById("personalTableBody").prepend(tr);
+      personal.unshift(nuevo);
+      guardarYRenderizar();
       e.target.reset();
+    }
+
+    function borrarPersonal(id) {
+      personal = personal.filter(item => item.id !== id);
+      guardarYRenderizar();
+    }
+
+    function renderPersonal() {
+      const tbody = document.getElementById("personalTableBody");
+      tbody.innerHTML = "";
+
+      let totalPersonal = 0;
+
+      personal.forEach(item => {
+        totalPersonal += item.total;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-[#20293a] transition";
+        tr.innerHTML = `
+          <td class="p-3 text-gray-300 whitespace-nowrap">${item.fecha}</td>
+          <td class="p-3 font-semibold text-white">${item.nombre}</td>
+          <td class="p-3 text-gray-300 font-bold">${item.dias}</td>
+          <td class="p-3 text-gray-300 font-bold">$${item.costo.toFixed(2)}</td>
+          <td class="p-3 text-green-400 font-black text-sm">$${item.total.toFixed(2)}</td>
+          <td class="p-3"><button onclick="borrarPersonal(${item.id})" class="text-red-400 hover:text-red-300">✖</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("resumenPersonal").innerText = `$${totalPersonal.toFixed(2)}`;
+    }
+
+    // --- GUARDADO GENERAL Y EXPORTACIÓN ---
+    function guardarYRenderizar() {
+      localStorage.setItem("casino_operaciones", JSON.stringify(operaciones));
+      localStorage.setItem("casino_personal", JSON.stringify(personal));
+      renderOperaciones();
+      renderPersonal();
+    }
+
+    function exportarExcel(tipo) {
+      const datos = tipo === 'operaciones' ? operaciones : personal;
+
+      if (datos.length === 0) {
+        alert("No hay registros para exportar.");
+        return;
+      }
+
+      // Limpiar objetos eliminando campos internos como ID
+      const datosExcel = datos.map(({ id, ...resto }) => resto);
+
+      const worksheet = XLSX.utils.json_to_sheet(datosExcel);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, tipo.toUpperCase());
+
+      XLSX.writeFile(workbook, `Casino_${tipo}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
+
+    function limpiarTodo(tipo) {
+      if (confirm(`¿Estás seguro de vaciar todos los datos de ${tipo}?`)) {
+        if (tipo === 'operaciones') operaciones = [];
+        else personal = [];
+        guardarYRenderizar();
+      }
     }
   </script>
 </body>
