@@ -1,403 +1,368 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Control PRO</title>
-    <style>
-        :root {
-            /* Paleta de colores Premium */
-            --bg-body: #0a0e17;       /* Fondo ultra oscuro */
-            --bg-card: #141a29;       /* Fondo tarjetas (ligeramente más claro) */
-            --bg-input: #1f293a;      /* Fondo inputs */
-            --accent: #f1e05a;        /* Amarillo corporativo */
-            --accent-hover: #ffea75;  /* Amarillo al pasar el mouse */
-            --text-main: #e6edf3;     /* Texto principal */
-            --text-muted: #8b949e;   /* Texto secundario */
-            --border: #2d364a;        /* Bordes suaves */
-            --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
-            --font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            transition: all 0.2s ease-in-out;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            line-height: 1.5;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1100px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        /* --- Estilos de Texto --- */
-        h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--accent);
-            text-align: center;
-            margin: 10px 0 30px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: var(--text-main);
-            border-bottom: 2px solid var(--accent);
-            display: inline-block;
-            padding-bottom: 5px;
-        }
-
-        /* --- Componentes Comunes --- */
-        .card {
-            background-color: var(--bg-card);
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-card);
-        }
-
-        /* --- Pantalla de Login (Mejorada) --- */
-        #login-screen {
-            max-width: 420px;
-            margin: auto;
-            text-align: center;
-            padding: 50px 30px;
-        }
-
-        #login-screen p {
-            color: var(--text-muted);
-            margin-bottom: 30px;
-        }
-
-        #password-input {
-            width: 100%;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            text-align: center;
-            padding: 15px;
-        }
-
-        /* --- Formulario y Grid --- */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        label {
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        input, select, textarea {
-            padding: 12px 15px;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-family: var(--font-family);
-            font-size: 0.95rem;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(241, 224, 90, 0.1);
-        }
-
-        /* Estilo para los inputs de dinero */
-        .input-money {
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        /* --- Botones --- */
-        .btn-primary {
-            background-color: var(--accent);
-            color: #000;
-            border: none;
-            padding: 14px 24px;
-            font-weight: 700;
-            font-size: 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 25px;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-primary:active {
-            transform: translateY(1px);
-        }
-
-        /* --- Tabla Premium --- */
-        .table-container {
-            overflow-x: auto;
-            margin-top: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            min-width: 800px; /* Asegura scroll en móviles */
-        }
-
-        th, td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background-color: rgba(31, 41, 58, 0.4);
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        th:first-child { border-radius: 8px 0 0 0; }
-        th:last-child { border-radius: 0 8px 0 0; }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background-color: rgba(31, 41, 58, 0.2);
-        }
-
-        .col-fecha { color: var(--text-muted); font-size: 0.9rem; }
-        .col-nombre { font-weight: 600; color: var(--text-main); }
-        .col-money { font-family: 'Courier New', Courier, monospace; font-weight: bold; color: var(--accent); text-align: right; }
-        .col-obs { color: var(--text-muted); font-size: 0.9rem; font-style: italic;}
-
-        /* Clases de utilidad */
-        .hidden { display: none !important; }
-        .text-error { color: #ff6b6b; font-size: 0.9rem; margin-top: 10px; font-weight: 500;}
-
-        /* Animación de entrada */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #main-panel:not(.hidden) {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CASINO CONTROL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #121824;
+      color: #ffffff;
+    }
+    .yellow-accent {
+      background-color: #eab308;
+      color: #000000;
+    }
+    .yellow-text {
+      color: #eab308;
+    }
+    .card-dark {
+      background-color: #1a2232;
+      border: 1px solid #2a3447;
+    }
+    .table-header {
+      background-color: #eab308;
+      color: #000000;
+      font-weight: 800;
+    }
+    .tab-btn.active {
+      background-color: #eab308;
+      color: #000000;
+      font-weight: bold;
+    }
+    .tab-btn.inactive {
+      background-color: #1a2232;
+      color: #9ca3af;
+      border: 1px solid #2a3447;
+    }
+    .tab-btn.inactive:hover {
+      color: #ffffff;
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen font-sans antialiased pb-12">
 
-<div class="container">
-
-    <!-- PANTALLA DE LOGIN -->
-    <div id="login-screen" class="card">
-        <h1>CASINO CONTROL<br><span style="font-size: 0.8rem; letter-spacing: 5px; color: var(--text-muted);">PRO SYSTEM</span></h1>
-        <p>Sistema de Gestión de Operaciones Seguras</p>
-        <div class="form-group">
-            <label>PIN DE ACCESO</label>
-            <input type="password" id="password-input" placeholder="****" maxlength="4">
-            <p id="login-error" class="text-error hidden">⚠ PIN Incorrecto. Intente nuevamente.</p>
+  <!-- PANTALLA DE LOGIN -->
+  <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
+    <div class="card-dark p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
+      <div class="w-16 h-16 yellow-accent rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <span class="text-3xl font-black">♠</span>
+      </div>
+      
+      <h1 class="text-2xl font-black tracking-wide text-white mb-1">CASINO CONTROL</h1>
+      <p class="text-xs text-gray-400 mb-6 uppercase tracking-wider">Acceso restringido</p>
+      
+      <form onsubmit="login(event)" class="space-y-4">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            🔒
+          </span>
+          <input type="password" id="passwordInput" placeholder="Clave de acceso" required
+            class="w-full pl-10 pr-4 py-3 bg-[#121824] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 text-sm">
         </div>
-        <button class="btn-primary" onclick="checkPassword()">Ingresar al Sistema</button>
+        
+        <button type="submit" 
+          class="w-full yellow-accent py-3 rounded-xl font-bold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-md">
+          INGRESAR
+        </button>
+      </form>
+      
+      <p id="errorMessage" class="text-red-400 text-xs mt-4 hidden">Contraseña incorrecta</p>
+    </div>
+  </div>
+
+  <!-- PANEL PRINCIPAL -->
+  <div id="appSection" class="hidden min-h-screen p-4 md:p-6 max-w-7xl mx-auto">
+    
+    <!-- HEADER SUPERIOR -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-gray-800 pb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 yellow-accent rounded-lg flex items-center justify-center font-bold text-xl">
+          ♠
+        </div>
+        <div>
+          <h1 class="text-xl font-black tracking-wide text-white leading-none">CASINO CONTROL</h1>
+          <span class="text-xs text-gray-400">Sistema de Gestión</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs">
+        <button onclick="toggleResumen()" class="card-dark px-4 py-2 rounded-lg text-gray-300 hover:text-white flex items-center gap-2 border border-gray-700">
+          📊 <span id="btnResumenText">Ver resumen</span>
+        </button>
+        <button onclick="logout()" class="card-dark px-4 py-2 rounded-lg text-gray-400 hover:text-red-400 flex items-center gap-2 border border-gray-700">
+          🔒 Cerrar sesión
+        </button>
+      </div>
     </div>
 
-    <!-- PANEL PRINCIPAL -->
-    <div id="main-panel" class="hidden">
-        <h1>Centro de Control</h1>
-
-        <!-- FORMULARIO DE REGISTRO -->
-        <div class="card">
-            <h2>Nuevo Registro de Operación</h2>
-            <form id="record-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Fecha de Operación</label>
-                        <input type="date" id="fecha" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Nombre del Operador/Cliente</label>
-                        <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Pagos Ingresados ($)</label>
-                        <input type="number" id="pagos" class="input-money" step="0.01" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label>Fichas Entregadas ($)</label>
-                        <input type="number" id="fichas" class="input-money" step="0.01" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label>Respaldo en Caja ($)</label>
-                        <input type="number" id="respaldo" class="input-money" step="0.01" placeholder="0.00">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 20px;">
-                    <label>Observaciones y Notas Finales</label>
-                    <textarea id="observaciones" rows="3" placeholder="Detalles relevantes de la operación..."></textarea>
-                </div>
-                <button type="submit" class="btn-primary">Finalizar y Guardar Registro</button>
-            </form>
+    <!-- PANEL DE RESUMEN GLOBAL -->
+    <div id="resumenPanel" class="hidden mb-6">
+      <div class="card-dark p-4 rounded-xl">
+        <h3 class="text-xs uppercase tracking-wider yellow-text font-bold mb-3">RESUMEN GENERAL</h3>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div class="bg-[#121824] p-3 rounded-lg border border-gray-800">
+            <span class="text-xs text-gray-400 block">TOTAL PAGOS</span>
+            <span id="resumenPagos" class="text-lg font-bold text-green-400">$0.00</span>
+          </div>
+          <div class="bg-[#121824] p-3 rounded-lg border border-gray-800">
+            <span class="text-xs text-gray-400 block">TOTAL FICHAS</span>
+            <span id="resumenFichas" class="text-lg font-bold yellow-text">0</span>
+          </div>
+          <div class="bg-[#121824] p-3 rounded-lg border border-gray-800">
+            <span class="text-xs text-gray-400 block">USUARIOS</span>
+            <span id="resumenUsuarios" class="text-lg font-bold text-blue-400">0</span>
+          </div>
+          <div class="bg-[#121824] p-3 rounded-lg border border-gray-800">
+            <span class="text-xs text-gray-400 block">TOTAL RESPALDO</span>
+            <span id="resumenRespaldos" class="text-lg font-bold text-purple-400">$0.00</span>
+          </div>
+          <div class="bg-[#121824] p-3 rounded-lg border border-gray-800">
+            <span class="text-xs text-gray-400 block">NÓMINA PERSONAL</span>
+            <span id="resumenPersonal" class="text-lg font-bold text-red-400">$0.00</span>
+          </div>
         </div>
-
-        <!-- RESUMEN DE DATOS -->
-        <div class="card">
-            <h2>Historial de Operaciones Recientes</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Nombre</th>
-                            <th style="text-align: right;">Pagos ($)</th>
-                            <th style="text-align: right;">Fichas ($)</th>
-                            <th style="text-align: right;">Respaldo ($)</th>
-                            <th>Observaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="records-table">
-                        <!-- Las filas se agregan dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+      </div>
     </div>
 
-</div>
+    <!-- PESTAÑAS DE NAVEGACIÓN -->
+    <div class="flex items-center gap-2 mb-6 border-b border-gray-800 pb-2 text-xs font-semibold">
+      <button id="tabOperacionesBtn" onclick="switchTab('operaciones')" class="tab-btn active px-4 py-2 rounded-lg transition flex items-center gap-2">
+        <span>🎰</span> Operaciones
+      </button>
+      <button id="tabPersonalBtn" onclick="switchTab('personal')" class="tab-btn inactive px-4 py-2 rounded-lg transition flex items-center gap-2">
+        <span>👥</span> Personal y Pagos
+      </button>
+    </div>
 
-<script>
-    // Configuración
-    const PIN_CORRECTO = "1234"; // Mantenemos el mismo PIN
-    const STORAGE_KEY = 'casino_records_pro'; // Clave nueva para no mezclar datos si usas el mismo navegador
+    <!-- PESTAÑA 1: CONTROL DE OPERACIONES -->
+    <div id="tabOperaciones" class="space-y-4">
+      <form onsubmit="addRecord(event)" class="card-dark p-4 rounded-xl grid grid-cols-2 md:grid-cols-7 gap-3 text-xs">
+        <div>
+          <label class="block text-gray-400 mb-1">Fecha</label>
+          <input type="date" id="fecha" required class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Nombre</label>
+          <input type="text" id="nombre" placeholder="Nombre" required class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Pagos ($)</label>
+          <input type="number" id="pagos" placeholder="0.00" step="0.01" class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Fichas</label>
+          <input type="number" id="fichas" placeholder="0" class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Usuarios</label>
+          <input type="text" id="usuarios" placeholder="Usuario" class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Respaldo ($)</label>
+          <input type="number" id="respaldo" placeholder="0.00" step="0.01" class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Observaciones</label>
+          <input type="text" id="observaciones" placeholder="Notas" class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <button type="submit" class="col-span-2 md:col-span-7 yellow-accent font-bold py-2 rounded-lg uppercase tracking-wider text-xs hover:opacity-90">
+          + Agregar Registro de Operación
+        </button>
+      </form>
 
-    // Cargar fecha de hoy automáticamente
-    document.getElementById('fecha').valueAsDate = new Date();
+      <div class="card-dark rounded-xl overflow-hidden shadow-xl border border-gray-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs uppercase tracking-wider">
+            <thead>
+              <tr class="table-header text-center">
+                <th class="p-3">FECHA</th>
+                <th class="p-3">NOMBRE</th>
+                <th class="p-3">PAGOS</th>
+                <th class="p-3">FICHAS</th>
+                <th class="p-3">USUARIOS</th>
+                <th class="p-3">RESPALDO</th>
+                <th class="p-3">OBSERVACIONES</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-gray-800 text-center font-medium">
+              <!-- Registros dinámicos -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-    // Gestión del PIN
-    function checkPassword() {
-        const pass = document.getElementById('password-input').value;
-        const errorMsg = document.getElementById('login-error');
+    <!-- PESTAÑA 2: CONTROL DE PERSONAL -->
+    <div id="tabPersonal" class="hidden space-y-4">
+      <form onsubmit="addPersonalRecord(event)" class="card-dark p-4 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        <div>
+          <label class="block text-gray-400 mb-1">Fecha</label>
+          <input type="date" id="pFecha" required class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Nombre del Empleado</label>
+          <input type="text" id="pNombre" placeholder="Nombre completo" required class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Días Trabajados</label>
+          <input type="number" id="pDias" placeholder="0" min="1" required class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Costo por Día ($)</label>
+          <input type="number" id="pCosto" placeholder="0.00" step="0.01" required class="w-full bg-[#121824] border border-gray-700 rounded-lg p-2 text-white">
+        </div>
+        <button type="submit" class="col-span-2 md:col-span-4 yellow-accent font-bold py-2 rounded-lg uppercase tracking-wider text-xs hover:opacity-90">
+          + Agregar Pago de Personal
+        </button>
+      </form>
 
-        if (pass === PIN_CORRECTO) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-panel').classList.remove('hidden');
-            errorMsg.classList.add('hidden');
-            loadRecords(); // Carga la tabla al entrar
-        } else {
-            errorMsg.classList.remove('hidden');
-            document.getElementById('password-input').value = '';
-            document.getElementById('password-input').focus();
-        }
+      <div class="card-dark rounded-xl overflow-hidden shadow-xl border border-gray-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs uppercase tracking-wider">
+            <thead>
+              <tr class="table-header text-center">
+                <th class="p-3">FECHA</th>
+                <th class="p-3">NOMBRE</th>
+                <th class="p-3">DÍAS TRABAJADOS</th>
+                <th class="p-3">COSTO POR DÍA</th>
+                <th class="p-3">TOTAL A PAGAR</th>
+              </tr>
+            </thead>
+            <tbody id="personalTableBody" class="divide-y divide-gray-800 text-center font-medium">
+              <!-- Registros dinámicos de personal -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const CLAVE_CORRECTA = "1234";
+
+    let totalPagosSum = 0;
+    let totalFichasSum = 0;
+    let totalUsuariosCount = 0;
+    let totalRespaldoSum = 0;
+    let totalPersonalSum = 0;
+
+    function login(e) {
+      e.preventDefault();
+      const input = document.getElementById("passwordInput").value;
+      if (input === CLAVE_CORRECTA) {
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("appSection").classList.remove("hidden");
+      } else {
+        document.getElementById("errorMessage").classList.remove("hidden");
+      }
     }
 
-    // Permitir Enter en el input de PIN
-    document.getElementById('password-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') { checkPassword(); }
-    });
-
-
-    // --- LÓGICA DE DATOS (LocalStorage) ---
-
-    // Formateador de moneda profesional
-    const formatter = new Intl.NumberFormat('es-AR', {
-        style: 'currency',
-        currency: 'ARS',
-        minimumFractionDigits: 2
-    });
-
-    // Guardar nuevo registro
-    document.getElementById('record-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const record = {
-            id: Date.now(), // ID único para cada registro
-            fecha: document.getElementById('fecha').value,
-            nombre: document.getElementById('nombre').value,
-            pagos: parseFloat(document.getElementById('pagos').value) || 0,
-            fichas: parseFloat(document.getElementById('fichas').value) || 0,
-            respaldo: parseFloat(document.getElementById('respaldo').value) || 0,
-            observaciones: document.getElementById('observaciones').value || '-'
-        };
-
-        let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        records.unshift(record); // Agrega al principio de la lista
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-
-        this.reset(); // Limpia formulario
-        document.getElementById('fecha').valueAsDate = new Date(); // Resetea fecha a hoy
-        loadRecords(); // Recarga la tabla
-    });
-
-    // Cargar y dibujar tabla
-    function loadRecords() {
-        const tbody = document.getElementById('records-table');
-        tbody.innerHTML = '';
-        const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-        if (records.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No hay registros guardados aún.</td></tr>';
-            return;
-        }
-
-        records.forEach(r => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="col-fecha">${formatearFecha(r.fecha)}</td>
-                <td class="col-nombre">${r.nombre}</td>
-                <td class="col-money">${formatter.format(r.pagos)}</td>
-                <td class="col-money">${formatter.format(r.fichas)}</td>
-                <td class="col-money">${formatter.format(r.respaldo)}</td>
-                <td class="col-obs">${r.observaciones}</td>
-            `;
-            tbody.appendChild(row);
-        });
+    function logout() {
+      document.getElementById("loginSection").classList.remove("hidden");
+      document.getElementById("appSection").classList.add("hidden");
+      document.getElementById("passwordInput").value = "";
     }
 
-    // Ayudante para formatear fecha (AAAA-MM-DD a DD/MM/AAAA)
-    function formatearFecha(fechaStr) {
-        if(!fechaStr) return '-';
-        const [yy, mm, dd] = fechaStr.split('-');
-        return `${dd}/${mm}/${yy}`;
+    function toggleResumen() {
+      const panel = document.getElementById("resumenPanel");
+      const btnText = document.getElementById("btnResumenText");
+      if (panel.classList.contains("hidden")) {
+        panel.classList.remove("hidden");
+        btnText.innerText = "Ocultar resumen";
+      } else {
+        panel.classList.add("hidden");
+        btnText.innerText = "Ver resumen";
+      }
     }
-</script>
 
+    // CAMBIO DE PESTAÑAS
+    function switchTab(tab) {
+      const tabOperaciones = document.getElementById("tabOperaciones");
+      const tabPersonal = document.getElementById("tabPersonal");
+      const btnOperaciones = document.getElementById("tabOperacionesBtn");
+      const btnPersonal = document.getElementById("tabPersonalBtn");
+
+      if (tab === 'operaciones') {
+        tabOperaciones.classList.remove("hidden");
+        tabPersonal.classList.add("hidden");
+
+        btnOperaciones.className = "tab-btn active px-4 py-2 rounded-lg transition flex items-center gap-2";
+        btnPersonal.className = "tab-btn inactive px-4 py-2 rounded-lg transition flex items-center gap-2";
+      } else {
+        tabOperaciones.classList.add("hidden");
+        tabPersonal.classList.remove("hidden");
+
+        btnOperaciones.className = "tab-btn inactive px-4 py-2 rounded-lg transition flex items-center gap-2";
+        btnPersonal.className = "tab-btn active px-4 py-2 rounded-lg transition flex items-center gap-2";
+      }
+    }
+
+    // REGISTRAR OPERACIÓN
+    function addRecord(e) {
+      e.preventDefault();
+      const fecha = document.getElementById("fecha").value;
+      const nombre = document.getElementById("nombre").value;
+      const pagos = parseFloat(document.getElementById("pagos").value || 0);
+      const fichas = parseInt(document.getElementById("fichas").value || 0);
+      const usuarios = document.getElementById("usuarios").value || "-";
+      const respaldo = parseFloat(document.getElementById("respaldo").value || 0);
+      const observaciones = document.getElementById("observaciones").value || "-";
+
+      totalPagosSum += pagos;
+      totalFichasSum += fichas;
+      if (usuarios !== "-") totalUsuariosCount++;
+      totalRespaldoSum += respaldo;
+
+      document.getElementById("resumenPagos").innerText = `$${totalPagosSum.toFixed(2)}`;
+      document.getElementById("resumenFichas").innerText = totalFichasSum;
+      document.getElementById("resumenUsuarios").innerText = totalUsuariosCount;
+      document.getElementById("resumenRespaldos").innerText = `$${totalRespaldoSum.toFixed(2)}`;
+
+      const tr = document.createElement("tr");
+      tr.className = "hover:bg-[#20293a] transition";
+      tr.innerHTML = `
+        <td class="p-3 text-gray-300 whitespace-nowrap">${fecha}</td>
+        <td class="p-3 font-semibold text-white">${nombre}</td>
+        <td class="p-3 text-green-400 font-bold">$${pagos.toFixed(2)}</td>
+        <td class="p-3 yellow-text font-bold">${fichas}</td>
+        <td class="p-3 text-gray-300">${usuarios}</td>
+        <td class="p-3 text-purple-400 font-bold">$${respaldo.toFixed(2)}</td>
+        <td class="p-3 text-gray-400 normal-case">${observaciones}</td>
+      `;
+
+      document.getElementById("tableBody").prepend(tr);
+      e.target.reset();
+    }
+
+    // REGISTRAR PERSONAL
+    function addPersonalRecord(e) {
+      e.preventDefault();
+      const fecha = document.getElementById("pFecha").value;
+      const nombre = document.getElementById("pNombre").value;
+      const dias = parseInt(document.getElementById("pDias").value || 0);
+      const costo = parseFloat(document.getElementById("pCosto").value || 0);
+      const totalPagar = dias * costo;
+
+      totalPersonalSum += totalPagar;
+      document.getElementById("resumenPersonal").innerText = `$${totalPersonalSum.toFixed(2)}`;
+
+      const tr = document.createElement("tr");
+      tr.className = "hover:bg-[#20293a] transition";
+      tr.innerHTML = `
+        <td class="p-3 text-gray-300 whitespace-nowrap">${fecha}</td>
+        <td class="p-3 font-semibold text-white">${nombre}</td>
+        <td class="p-3 text-gray-300 font-bold">${dias}</td>
+        <td class="p-3 text-gray-300 font-bold">$${costo.toFixed(2)}</td>
+        <td class="p-3 text-green-400 font-black text-sm">$${totalPagar.toFixed(2)}</td>
+      `;
+
+      document.getElementById("personalTableBody").prepend(tr);
+      e.target.reset();
+    }
+  </script>
 </body>
 </html>
