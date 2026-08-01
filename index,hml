@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Control</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --accent-color: #f1e05a;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1, h2 {
+            color: var(--accent-color);
+            text-align: center;
+        }
+
+        /* Pantalla de Login */
+        #login-screen {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            max-width: 400px;
+            margin: 100px auto;
+            text-align: center;
+        }
+
+        /* Formulario y Tabla */
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        input, select, textarea {
+            padding: 10px;
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--accent-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LOGIN -->
+    <div id="login-screen">
+        <h1>Casino Control</h1>
+        <p>Ingrese la contraseña para continuar</p>
+        <div class="form-group">
+            <input type="password" id="password-input" placeholder="Contraseña">
+        </div>
+        <button onclick="checkPassword()">Ingresar</button>
+        <p id="login-error" style="color: #ff6b6b; display: none; margin-top: 10px;">Contraseña incorrecta</p>
+    </div>
+
+    <!-- PANEL PRINCIPAL -->
+    <div id="main-panel" class="hidden">
+        <h1>Control de Operaciones</h1>
+
+        <!-- FORMULARIO DE REGISTRO -->
+        <div class="card">
+            <h2>Nuevo Registro</h2>
+            <form id="record-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="nombre" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Pagos ($)</label>
+                        <input type="number" id="pagos" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Fichas ($)</label>
+                        <input type="number" id="fichas" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Respaldo ($)</label>
+                        <input type="number" id="respaldo" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Observaciones</label>
+                    <textarea id="observaciones" rows="2" placeholder="Notas adicionales..."></textarea>
+                </div>
+                <button type="submit">Guardar Registro</button>
+            </form>
+        </div>
+
+        <!-- RESUMEN DE DATOS -->
+        <div class="card">
+            <h2>Registros Guardados</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Nombre</th>
+                            <th>Pagos</th>
+                            <th>Fichas</th>
+                            <th>Respaldo</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-table">
+                        <!-- Las filas se agregan dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const CONTRASEÑA_CORRECTA = "1234";
+
+    function checkPassword() {
+        const pass = document.getElementById('password-input').value;
+        if (pass === CONTRASEÑA_CORRECTA) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-panel').classList.remove('hidden');
+            loadRecords();
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+        }
+    }
+
+    // Manejo del formulario
+    document.getElementById('record-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const record = {
+            fecha: document.getElementById('fecha').value,
+            nombre: document.getElementById('nombre').value,
+            pagos: document.getElementById('pagos').value || 0,
+            fichas: document.getElementById('fichas').value || 0,
+            respaldo: document.getElementById('respaldo').value || 0,
+            observaciones: document.getElementById('observaciones').value || '-'
+        };
+
+        let records = JSON.parse(localStorage.getItem('casino_records')) || [];
+        records.push(record);
+        localStorage.setItem('casino_records', JSON.stringify(records));
+
+        this.reset();
+        loadRecords();
+    });
+
+    // Cargar registros almacenados
+    function loadRecords() {
+        const tbody = document.getElementById('records-table');
+        tbody.innerHTML = '';
+        const records = JSON.parse(localStorage.getItem('casino_records')) || [];
+
+        records.forEach(r => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${r.fecha}</td>
+                <td>${r.nombre}</td>
+                <td>$${Number(r.pagos).toLocaleString()}</td>
+                <td>$${Number(r.fichas).toLocaleString()}</td>
+                <td>$${Number(r.respaldo).toLocaleString()}</td>
+                <td>${r.observaciones}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+</script>
+
+</body>
+</html>
